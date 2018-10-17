@@ -1,0 +1,193 @@
+/* Specification for PostFix tokens */
+
+
+		// User Customisations.  Put class file declarations here
+
+package postfix.syntax;
+
+
+
+
+%%
+
+    // JFlex directives.  See documentation for other options
+    
+// %cup					// will usually be enabled
+%public
+
+%class PostFixLexer                     // name of lexer class
+
+%type Token     			// class of tokens returned
+
+%eofval{
+	return new Token(TokenType.EOF);   // what to do when EOF found
+%eofval}
+
+// keep track of character and line counts
+%char					// enable character offset counting
+%line					// enable line number counting
+
+// put any verbatim code to be included within class between %{ ... %}
+%{					
+    public int getChar() {
+	return yychar + 1;
+    }
+
+    public int getLine() {
+	return yyline + 1;
+    }
+
+    public String getText() {
+	return yytext();
+    }
+%}
+    // macro definitions. (Watch out for incompatibilities between Jlex/JFlex)
+
+// newline characters
+nl = [\n\r]
+
+// (cursor) control characters
+cc = [\b\f]|{nl}
+// whitespace
+ws = ({cc}|[\t" "])
+
+int = [1-9][0-9]*|[0]
+
+ // Comments not allowed in last section.  Add missing patterns and actions
+ // below.  Order matters, if more than one pattern applies, the earlier one
+ // is used.  So usually you want least specific patterns later in the file.
+%%
+<YYINITIAL>	{nl}	{ 
+			   //skip whitespace, but reset char counter
+			  yychar = 0;
+			} 
+
+<YYINITIAL>	{ws}	{
+                            //skip whitespace
+			}
+
+<YYINITIAL>    ";".* {
+                            // skip single line comments (beginning with ;)
+                      }
+
+<YYINITIAL>	add	
+                {
+                    return new Token(TokenType.ADD);
+                }
+
+
+<YYINITIAL>     sub     
+                {
+                    return new Token(TokenType.SUB);
+                }
+
+<YYINITIAL>     mul     
+                {
+                    return new Token(TokenType.MUL);
+                }
+
+<YYINITIAL>     div     
+                {
+                    return new Token(TokenType.DIV);
+                }
+
+<YYINITIAL>     mod     
+                {
+                    return new Token(TokenType.MOD);
+                }
+
+
+<YYINITIAL>     eq     
+                {
+                    return new Token(TokenType.EQ);
+                }
+
+<YYINITIAL>     gt     
+                {
+                    return new Token(TokenType.GT);
+                }
+
+<YYINITIAL>     lt     
+                {
+                    return new Token(TokenType.LT);
+                }
+
+<YYINITIAL>     le     
+                {
+                    return new Token(TokenType.LE);
+                }
+
+
+<YYINITIAL>     ge     
+                {
+                    return new Token(TokenType.GE);
+                }
+
+
+<YYINITIAL>     swap     
+                {
+                    return new Token(TokenType.SWAP);
+                }
+
+
+<YYINITIAL>     pop     
+                {
+                    return new Token(TokenType.POP);
+                }
+
+<YYINITIAL>     roll3     
+                {
+                    return new Token(TokenType.ROLL3);
+                }
+
+
+<YYINITIAL>     dup     
+                {
+                    return new Token(TokenType.DUP);
+                }
+
+
+<YYINITIAL>     exec     
+                {
+                    return new Token(TokenType.EXEC);
+                }
+
+<YYINITIAL>     if     
+                {
+                    return new Token(TokenType.IF);
+                }
+
+<YYINITIAL>     print     
+                {
+                    return new Token(TokenType.PRINT);
+                }
+
+
+<YYINITIAL>     eof     
+                {
+                    return new Token(TokenType.EOF);
+                }
+
+<YYINITIAL>     {int}  
+                {
+                    return new Token(TokenType.INT,yytext());
+                }
+
+<YYINITIAL>     true|false   
+                {
+                    return new Token(TokenType.BOOL,yytext());
+                }
+<YYINITIAL>     \(   
+                {
+                    return new Token(TokenType.LPAREN);
+                }
+<YYINITIAL>     \)   
+                {
+                    return new Token(TokenType.RPAREN);
+                }
+
+
+
+
+
+
